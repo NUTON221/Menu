@@ -6,7 +6,7 @@ local Window = Rayfield:CreateWindow({
    LoadingTitle = "Загрузка...",
    LoadingSubtitle = "NUTON221",
    ShowText = "NeytronHub",
-   Theme = "Amethyst", -- 🌌 тема
+   Theme = "Amethyst",
    ToggleUIKeybind = "K",
 
    ConfigurationSaving = {
@@ -23,7 +23,7 @@ local Window = Rayfield:CreateWindow({
 })
 
 ---------------------------------------------------------
--- Твой функционал
+-- Телепорты
 ---------------------------------------------------------
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -34,9 +34,7 @@ local loopEnabled = false
 local delayTime = 15
 
 local function safeFire(mapId)
-    local args = {
-        { mapId = mapId }
-    }
+    local args = { { mapId = mapId } }
     local ok, err = pcall(function()
         StartLocalPlayerTeleport:FireServer(unpack(args))
     end)
@@ -45,11 +43,8 @@ local function safeFire(mapId)
     end
 end
 
--- Создаём вкладку и секцию
 local MainTab = Window:CreateTab("Main", 4483362458)
-local MainSection = MainTab:CreateSection("Mains")
 
--- Слайдер задержки
 MainTab:CreateSlider({
     Name = "Время между тп",
     Range = {1, 60},
@@ -63,24 +58,20 @@ MainTab:CreateSlider({
     end,
 })
 
--- Тумблер запуска цикла
 MainTab:CreateToggle({
     Name = "Цикл телепорта 50001-50009",
     CurrentValue = false,
     Flag = "TeleportLoop",
     Callback = function(state)
         loopEnabled = state
-
         if loopEnabled then
             print("Цикл телепорта запущён")
             task.spawn(function()
                 while loopEnabled do
                     for id = 50001, 50009 do
                         if not loopEnabled then break end
-
                         safeFire(id)
                         print("Отправлен mapId:", id)
-
                         local step = 0.25
                         local elapsed = 0
                         while elapsed < delayTime and loopEnabled do
@@ -94,6 +85,41 @@ MainTab:CreateToggle({
             end)
         else
             print("Цикл телепорта выключен")
+        end
+    end
+})
+
+---------------------------------------------------------
+-- Кнопки для HeroEquipGradePanel и QuirkNewPanel
+---------------------------------------------------------
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+local func1Panel = playerGui:WaitForChild("HeroEquipGradePanel", 10)
+local func2Panel = playerGui:WaitForChild("QuirkNewPanel", 10)
+
+MainTab:CreateButton({
+    Name = "Переключить range панель",
+    Callback = function()
+        if func1Panel and typeof(func1Panel.Enabled) == "boolean" then
+            func1Panel.Enabled = not func1Panel.Enabled
+            print("HeroEquipGradePanel Enabled =", func1Panel.Enabled)
+        else
+            warn("HeroEquipGradePanel не найдена или не имеет свойства Enabled")
+        end
+    end
+})
+
+MainTab:CreateButton({
+    Name = "Переключить enchant панель",
+    Callback = function()
+        if func2Panel and typeof(func2Panel.Enabled) == "boolean" then
+            func2Panel.Enabled = not func2Panel.Enabled
+            print("QuirkNewPanel Enabled =", func2Panel.Enabled)
+        else
+            warn("QuirkNewPanel не найдена или не имеет свойства Enabled")
         end
     end
 })
