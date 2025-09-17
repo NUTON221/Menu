@@ -1,26 +1,41 @@
--- Подключаем UI библиотеку
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Robojini/Tuturial_UI_Library/main/UI_Template_1"))()
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
--- Создаём окно и вкладки
-local Window = Library.CreateLib("NeytronHub", "RJTheme5")
-local Tab = Window:NewTab("Main")
-local Section = Tab:NewSection("Mains")
+local Window = Rayfield:CreateWindow({
+   Name = "NeytronHub",
+   Icon = 0,
+   LoadingTitle = "Загрузка...",
+   LoadingSubtitle = "by You",
+   ShowText = "NeytronHub",
+   Theme = "Amethyst", -- 🌌 тема
+   ToggleUIKeybind = "K",
 
--- Переменные
-local loopEnabled = false
-local delayTime = 15 -- задержка по умолчанию
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = "NeytronHub",
+      FileName = "Settings"
+   },
 
--- Кэшируем Remote
+   Discord = {
+      Enabled = false
+   },
+
+   KeySystem = false
+})
+
+---------------------------------------------------------
+-- Твой функционал
+---------------------------------------------------------
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Remotes = ReplicatedStorage:WaitForChild("Remotes")
 local StartLocalPlayerTeleport = Remotes:WaitForChild("StartLocalPlayerTeleport")
 
--- Безопасная отправка команды
+local loopEnabled = false
+local delayTime = 15
+
 local function safeFire(mapId)
     local args = {
-        {
-            mapId = mapId
-        }
+        { mapId = mapId }
     }
     local ok, err = pcall(function()
         StartLocalPlayerTeleport:FireServer(unpack(args))
@@ -30,82 +45,59 @@ local function safeFire(mapId)
     end
 end
 
--- Слайдер для задержки
-Section:NewSlider("время между тп", "Регулируй время между командами", 60, 1, function(value)
-    delayTime = value
-    print("Новая задержка:", delayTime, "секунд")
-end)
+-- Создаём вкладку и секцию
+local MainTab = Window:CreateTab("Main", 4483362458)
+local MainSection = MainTab:CreateSection("Mains")
+
+-- Слайдер задержки
+MainTab:CreateSlider({
+    Name = "Время между тп",
+    Range = {1, 60},
+    Increment = 1,
+    Suffix = "сек",
+    CurrentValue = 15,
+    Flag = "DelayTime",
+    Callback = function(value)
+        delayTime = value
+        print("Новая задержка:", delayTime, "секунд")
+    end,
+})
 
 -- Тумблер запуска цикла
-Section:NewToggle("Цикл телепорта 50001-50009", "Последовательно шлёт mapId 50001..50009", function(state)
-    loopEnabled = state
+MainTab:CreateToggle({
+    Name = "Цикл телепорта 50001-50009",
+    CurrentValue = false,
+    Flag = "TeleportLoop",
+    Callback = function(state)
+        loopEnabled = state
 
-    if loopEnabled then
-        print("Цикл телепорта запущён")
-        task.spawn(function()
-            while loopEnabled do
-                for id = 50001, 50009 do
-                    if not loopEnabled then break end
+        if loopEnabled then
+            print("Цикл телепорта запущён")
+            task.spawn(function()
+                while loopEnabled do
+                    for id = 50001, 50009 do
+                        if not loopEnabled then break end
 
-                    safeFire(id)
-                    print("Отправлен mapId:", id)
+                        safeFire(id)
+                        print("Отправлен mapId:", id)
 
-                    -- прерываемое ожидание
-                    local step = 0.25
-                    local elapsed = 0
-                    while elapsed < delayTime and loopEnabled do
-                        task.wait(step)
-                        elapsed = elapsed + step
+                        local step = 0.25
+                        local elapsed = 0
+                        while elapsed < delayTime and loopEnabled do
+                            task.wait(step)
+                            elapsed += step
+                        end
+                        if not loopEnabled then break end
                     end
-                    if not loopEnabled then break end
                 end
-            end
-            print("Цикл телепорта остановлен")
-        end)
-    else
-        print("Цикл телепорта выключен")
+                print("Цикл телепорта остановлен")
+            end)
+        else
+            print("Цикл телепорта выключен")
+        end
     end
-end)
+})
 
----------------------------------------------------------------------
--- 📱 Мобильное перетаскивание окна
----------------------------------------------------------------------
-task.wait(1) -- ждём, чтобы GUI успел загрузиться
-
-local gui = game.CoreGui:WaitForChild("NeytronHub") -- имя твоего GUI
-local mainFrame = gui:WaitForChild("Main") -- основной фрейм
-local topBar = mainFrame:WaitForChild("TopBar") -- шапка окна (перетаскиваем за неё)
-
-local UserInputService = game:GetService("UserInputService")
-local dragging = false
-local dragStart, startPos
-
-local function update(input)
-	if dragging then
-		local delta = input.Position - dragStart
-		mainFrame.Position = UDim2.new(
-			0, startPos.X.Offset + delta.X,
-			0, startPos.Y.Offset + delta.Y
-		)
-	end
-end
-
-topBar.InputBegan:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1
-	or input.UserInputType == Enum.UserInputType.Touch then
-		dragging = true
-		dragStart = input.Position
-		startPos = mainFrame.Position
-		input.Changed:Connect(function()
-			if input.UserInputState == Enum.UserInputState.End then
-				dragging = false
-			end
-		end)
-	end
-end)
-
-topBar.InputChanged:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseMovement
 	or input.UserInputType == Enum.UserInputType.Touch then
 		update(input)
 	end
