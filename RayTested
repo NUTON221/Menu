@@ -123,3 +123,34 @@ MainTab:CreateButton({
         end
     end
 })
+
+---------------------------------------------------------
+-- Новая кнопка: телепорт всех героев к игроку
+---------------------------------------------------------
+
+MainTab:CreateButton({
+    Name = "Телепортировать героев к себе",
+    Callback = function()
+        local character = player.Character or player.CharacterAdded:Wait()
+        local hrp = character:WaitForChild("HumanoidRootPart")
+
+        local heroesFolder = workspace:FindFirstChild("Heros")
+        if not heroesFolder then
+            warn("Папка Heros не найдена")
+            return
+        end
+
+        local heroGroup = heroesFolder:FindFirstChild("Hero_1420811697")
+        if not heroGroup then
+            warn("Папка Hero_1420811697 не найдена")
+            return
+        end
+
+        for _, hero in ipairs(heroGroup:GetChildren()) do
+            if hero:IsA("Model") and hero:FindFirstChild("HumanoidRootPart") then
+                hero:MoveTo(hrp.Position + Vector3.new(math.random(-5,5), 0, math.random(-5,5)))
+            end
+        end
+        print("Герои телепортированы к игроку")
+    end
+})
