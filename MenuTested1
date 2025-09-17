@@ -1,0 +1,64 @@
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Robojini/Tuturial_UI_Library/main/UI_Template_1"))()
+
+local Window = Library.CreateLib("NeytronHub", "RJTheme5")
+local Tab = Window:NewTab("Main")
+local Section = Tab:NewSection("Mains")
+
+local loopEnabled = false
+local delayTime = 15 -- задержка по умолчанию
+
+-- кешируем remote
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Remotes = ReplicatedStorage:WaitForChild("Remotes")
+local StartLocalPlayerTeleport = Remotes:WaitForChild("StartLocalPlayerTeleport")
+
+local function safeFire(mapId)
+    local args = {
+        {
+            mapId = mapId
+        }
+    }
+    local ok, err = pcall(function()
+        StartLocalPlayerTeleport:FireServer(unpack(args))
+    end)
+    if not ok then
+        warn("Ошибка при отправке StartLocalPlayerTeleport:", err)
+    end
+end
+
+-- Слайдер для задержки
+Section:NewSlider("время между тп", "Регулируй время между командами", 60, 1, function(value)
+    delayTime = value
+    print("Новая задержка:", delayTime, "секунд")
+end)
+
+-- Тумблер запуска цикла
+Section:NewToggle("Цикл телепорта 50001-50009", "Последовательно шлёт mapId 50001..50009", function(state)
+    loopEnabled = state
+
+    if loopEnabled then
+        print("Цикл телепорта запущён")
+        task.spawn(function()
+            while loopEnabled do
+                for id = 50001, 50009 do
+                    if not loopEnabled then break end
+
+                    safeFire(id)
+                    print("Отправлен mapId:", id)
+
+                    -- прерываемое ожидание с учётом delayTime
+                    local step = 0.25
+                    local elapsed = 0
+                    while elapsed < delayTime and loopEnabled do
+                        task.wait(step)
+                        elapsed = elapsed + step
+                    end
+                    if not loopEnabled then break end
+                end
+            end
+            print("Цикл телепорта остановлен")
+        end)
+    else
+        print("Цикл телепорта выключен")
+    end
+end)
