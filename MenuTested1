@@ -1,17 +1,21 @@
+-- Подключаем UI библиотеку
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Robojini/Tuturial_UI_Library/main/UI_Template_1"))()
 
+-- Создаём окно и вкладки
 local Window = Library.CreateLib("NeytronHub", "RJTheme5")
 local Tab = Window:NewTab("Main")
 local Section = Tab:NewSection("Mains")
 
+-- Переменные
 local loopEnabled = false
 local delayTime = 15 -- задержка по умолчанию
 
--- кешируем remote
+-- Кэшируем Remote
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Remotes = ReplicatedStorage:WaitForChild("Remotes")
 local StartLocalPlayerTeleport = Remotes:WaitForChild("StartLocalPlayerTeleport")
 
+-- Безопасная отправка команды
 local function safeFire(mapId)
     local args = {
         {
@@ -46,7 +50,7 @@ Section:NewToggle("Цикл телепорта 50001-50009", "Последова
                     safeFire(id)
                     print("Отправлен mapId:", id)
 
-                    -- прерываемое ожидание с учётом delayTime
+                    -- прерываемое ожидание
                     local step = 0.25
                     local elapsed = 0
                     while elapsed < delayTime and loopEnabled do
@@ -61,4 +65,48 @@ Section:NewToggle("Цикл телепорта 50001-50009", "Последова
     else
         print("Цикл телепорта выключен")
     end
+end)
+
+---------------------------------------------------------------------
+-- 📱 Мобильное перетаскивание окна
+---------------------------------------------------------------------
+task.wait(1) -- ждём, чтобы GUI успел загрузиться
+
+local gui = game.CoreGui:WaitForChild("NeytronHub") -- имя твоего GUI
+local mainFrame = gui:WaitForChild("Main") -- основной фрейм
+local topBar = mainFrame:WaitForChild("TopBar") -- шапка окна (перетаскиваем за неё)
+
+local UserInputService = game:GetService("UserInputService")
+local dragging = false
+local dragStart, startPos
+
+local function update(input)
+	if dragging then
+		local delta = input.Position - dragStart
+		mainFrame.Position = UDim2.new(
+			0, startPos.X.Offset + delta.X,
+			0, startPos.Y.Offset + delta.Y
+		)
+	end
+end
+
+topBar.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1
+	or input.UserInputType == Enum.UserInputType.Touch then
+		dragging = true
+		dragStart = input.Position
+		startPos = mainFrame.Position
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+topBar.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement
+	or input.UserInputType == Enum.UserInputType.Touch then
+		update(input)
+	end
 end)
