@@ -8,24 +8,18 @@ local Window = Rayfield:CreateWindow({
    ShowText = "NeytronHub",
    Theme = "Amethyst",
    ToggleUIKeybind = "K",
-
    ConfigurationSaving = {
       Enabled = true,
       FolderName = "NeytronHub",
       FileName = "Settings"
    },
-
-   Discord = {
-      Enabled = false
-   },
-
+   Discord = { Enabled = false },
    KeySystem = false
 })
 
 ---------------------------------------------------------
--- Телепорты
+-- Телепорты по mapId (циклично)
 ---------------------------------------------------------
-
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Remotes = ReplicatedStorage:WaitForChild("Remotes")
 local StartLocalPlayerTeleport = Remotes:WaitForChild("StartLocalPlayerTeleport")
@@ -43,9 +37,9 @@ local function safeFire(mapId)
     end
 end
 
-local MainTab = Window:CreateTab("Main", 4483362458)
+local autoteleport = Window:CreateTab("teleport", 4483362458)
 
-MainTab:CreateSlider({
+autoteleport:CreateSlider({
     Name = "Время между тп",
     Range = {1, 60},
     Increment = 1,
@@ -58,7 +52,7 @@ MainTab:CreateSlider({
     end,
 })
 
-MainTab:CreateToggle({
+autoteleport:CreateToggle({
     Name = "Цикл телепорта 50001-50009",
     CurrentValue = false,
     Flag = "TeleportLoop",
@@ -90,9 +84,55 @@ MainTab:CreateToggle({
 })
 
 ---------------------------------------------------------
+-- Телепорт героев из папки к игроку
+---------------------------------------------------------
+local function teleportHeroes(folderName)
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+    local hrp = character:WaitForChild("HumanoidRootPart")
+
+    local heroesFolder = workspace:WaitForChild("Heros"):FindFirstChild(folderName)
+    if not heroesFolder then
+        warn("Папка "..folderName.." не найдена в workspace.Heros")
+        return
+    end
+
+    for _, hero in ipairs(heroesFolder:GetChildren()) do
+        if hero:IsA("Model") and hero:FindFirstChild("HumanoidRootPart") then
+            hero:MoveTo(hrp.Position + Vector3.new(math.random(-5,5), 0, math.random(-5,5)))
+        end
+    end
+end
+
+---------------------------------------------------------
+-- Вкладка Main с кнопками arise
+---------------------------------------------------------
+local main = Window:CreateTab("Main", 4483362458)
+
+main:CreateButton({
+    Name = "arise nuton",
+    Callback = function()
+        teleportHeroes("Hero_1420811697") --
+    end
+})
+
+main:CreateButton({
+    Name = "arise ivan",
+    Callback = function()
+        teleportHeroes("Hero_8694797078") -- 
+    end
+})
+
+main:CreateButton({
+    Name = "arise dvoynik",
+    Callback = function()
+        teleportHeroes("Hero_774897891") --
+    end
+})
+
+---------------------------------------------------------
 -- Кнопки для HeroEquipGradePanel и QuirkNewPanel
 ---------------------------------------------------------
-
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -100,7 +140,7 @@ local playerGui = player:WaitForChild("PlayerGui")
 local func1Panel = playerGui:WaitForChild("HeroEquipGradePanel", 10)
 local func2Panel = playerGui:WaitForChild("QuirkNewPanel", 10)
 
-MainTab:CreateButton({
+main:CreateButton({
     Name = "Переключить range панель",
     Callback = function()
         if func1Panel and typeof(func1Panel.Enabled) == "boolean" then
@@ -112,7 +152,7 @@ MainTab:CreateButton({
     end
 })
 
-MainTab:CreateButton({
+main:CreateButton({
     Name = "Переключить enchant панель",
     Callback = function()
         if func2Panel and typeof(func2Panel.Enabled) == "boolean" then
@@ -124,33 +164,4 @@ MainTab:CreateButton({
     end
 })
 
----------------------------------------------------------
--- Новая кнопка: телепорт всех героев к игроку
----------------------------------------------------------
-
-MainTab:CreateButton({
-    Name = "Телепортировать героев к себе",
-    Callback = function()
-        local character = player.Character or player.CharacterAdded:Wait()
-        local hrp = character:WaitForChild("HumanoidRootPart")
-
-        local heroesFolder = workspace:FindFirstChild("Heros")
-        if not heroesFolder then
-            warn("Папка Heros не найдена")
-            return
-        end
-
-        local heroGroup = heroesFolder:FindFirstChild("Hero_1420811697")
-        if not heroGroup then
-            warn("Папка Hero_1420811697 не найдена")
-            return
-        end
-
-        for _, hero in ipairs(heroGroup:GetChildren()) do
-            if hero:IsA("Model") and hero:FindFirstChild("HumanoidRootPart") then
-                hero:MoveTo(hrp.Position + Vector3.new(math.random(-5,5), 0, math.random(-5,5)))
-            end
-        end
-        print("Герои телепортированы к игроку")
-    end
-})
+Rayfield:LoadConfiguration()
