@@ -83,8 +83,34 @@ autoteleport:CreateToggle({
     end
 })
 
+-- 🔹 Новая кнопка: телепорт в осаду 1
+autoteleport:CreateButton({
+    Name = "ТП в осаду 1",
+    Callback = function()
+        local Remotes = game:GetService("ReplicatedStorage"):WaitForChild("Remotes")
+
+        Remotes:WaitForChild("EnterCityRaidMap"):FireServer(1000001)
+
+        print("✅ Телепорт в осаду 1 выполнен")
+    end
+})
+
+
+-- 🔹 Новая кнопка: телепорт в осаду 2 (повтор)
+autoteleport:CreateButton({
+    Name = "ТП в осаду 2",
+    Callback = function()
+        local Remotes = game:GetService("ReplicatedStorage"):WaitForChild("Remotes")
+
+        -- шаг 1
+        Remotes:WaitForChild("EnterCityRaidMap"):FireServer(1000002)
+
+        print("✅ Телепорт в осаду 1 выполнен")
+    end
+})
+
 ---------------------------------------------------------
--- Остальной функционал без изменений
+-- Телепорт героев из папки к игроку
 ---------------------------------------------------------
 local function teleportHeroes(folderName)
     local player = game.Players.LocalPlayer
@@ -104,6 +130,9 @@ local function teleportHeroes(folderName)
     end
 end
 
+---------------------------------------------------------
+-- Вкладка Main с кнопками arise + осада
+---------------------------------------------------------
 local main = Window:CreateTab("Main", 4483362458)
 
 main:CreateButton({
@@ -127,6 +156,10 @@ main:CreateButton({
     end
 })
 
+
+---------------------------------------------------------
+-- Кнопки для HeroEquipGradePanel и QuirkNewPanel
+---------------------------------------------------------
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
