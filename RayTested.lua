@@ -9,7 +9,7 @@ local Window = Rayfield:CreateWindow({
    Theme = "Amethyst",
    ToggleUIKeybind = "K",
    ConfigurationSaving = {
-      Enabled = true,
+      Enabled = false,
       FolderName = "NeytronHub",
       FileName = "Settings"
    },
@@ -221,7 +221,6 @@ main:CreateButton({
 ---------------------------------------------------------
 local PotionTab = Window:CreateTab("Potions", 4483362458)
 
--- таблица с вариантами и айди
 local PotionIds = {
     ["Средняя удачи"] = 10047,
     ["Средняя дмг"] = 10048,
@@ -238,10 +237,10 @@ local PotionCount = 1
 PotionTab:CreateDropdown({
     Name = "Выбери зелье",
     Options = {"Средняя удачи","Средняя дмг","Средняя монет","Большая удачи","Большая дмг","Большая монет"},
-    CurrentOption = {"Средняя удачи"}, -- тут тоже массив
+    CurrentOption = {"Средняя удачи"}, 
     Flag = "PotionType",
     Callback = function(option)
-        SelectedPotion = option[1]  -- ✅ берем первый элемент
+        SelectedPotion = option[1] 
         print("Выбрано зелье:", SelectedPotion, "ID:", PotionIds[SelectedPotion])
     end,
 })
@@ -271,6 +270,41 @@ PotionTab:CreateButton({
         print("Скрафтил:", PotionCount, "x", SelectedPotion, "(ID:", PotionIds[SelectedPotion],")")
     end
 })
+---------------------------------------------------------
+-- Вкладка Misc (прочее)
+local scripts = Window:CreateTab("Scripts", 4483362458)
 
+local ScriptUrls = {
+    ["Infinite Yield"] = "https://raw.githubusercontent.com/edgeiy/infiniteyield/master/source",
+    ["Dark Dex V3"] = "https://raw.githubusercontent.com/Cynacol/Dark-Dex-V3/main/Dark%20Dex%20V3.txt",
+    [""] = ""
+  
+}
 
-Rayfield:LoadConfiguration()
+local selectedScript = "Infinite Yield"
+
+-- Выбор скрипта
+scripts:CreateDropdown({
+    Name = "Выбери скрипт",
+    Options = {"Infinite Yield", "Dark Dex V3", " "},
+    CurrentOption = {"Infinite Yield"},
+    Flag = "ScriptType",
+    Callback = function(option)
+        selectedScript = option[1]
+        print("Выбран скрипт:", selectedScript)
+    end,
+})
+
+-- Кнопка запуска
+scripts:CreateButton({
+    Name = "Запустить",
+    Callback = function()
+        local url = ScriptUrls[selectedScript]
+        if url then
+            loadstring(game:HttpGet(url))()
+            print("Запущен:", selectedScript)
+        else
+            warn("Ссылка для "..selectedScript.." не найдена!")
+        end
+    end
+})
