@@ -9,7 +9,7 @@ local Window = Rayfield:CreateWindow({
    Theme = "Amethyst",
    ToggleUIKeybind = "CapsLock",
    ConfigurationSaving = {
-      Enabled = true,
+      Enabled = false,
       FolderName = "NeytronHub v1.3",
       FileName = "Settings"
    },
