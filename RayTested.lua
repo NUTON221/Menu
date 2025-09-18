@@ -83,32 +83,57 @@ autoteleport:CreateToggle({
     end
 })
 
--- 🔹 Новая кнопка: телепорт в осаду 1
+
+---------------------------------------------------------
+-- Телепорт в осаду 1 
 autoteleport:CreateButton({
     Name = "ТП в осаду 1",
     Callback = function()
         local Remotes = game:GetService("ReplicatedStorage"):WaitForChild("Remotes")
 
-        Remotes:WaitForChild("EnterCityRaidMap"):FireServer(1000001)
+        -- Этап 1: LocalPlayerTeleport (50003)
+        Remotes:WaitForChild("LocalPlayerTeleport"):FireServer({mapId = 50003})
+        print("Шаг 1: LocalPlayerTeleport (50003)")
 
-        print("✅ Телепорт в осаду 1 выполнен")
+        -- Этап 2: задержка 3 сек
+        task.wait(3)
+
+        -- Этап 3: EnterCityRaidMap (1000001)
+        Remotes:WaitForChild("EnterCityRaidMap"):FireServer(1000001)
+        print("Шаг 2: EnterCityRaidMap (1000001)")
+
+        -- Этап 4: StartLocalPlayerTeleport (50201)
+        Remotes:WaitForChild("StartLocalPlayerTeleport"):FireServer({mapId = 50201})
+        print("Шаг 3: StartLocalPlayerTeleport (50201)")
+
+    
     end
 })
-
-
--- 🔹 Новая кнопка: телепорт в осаду 2 (повтор)
+---------------------------------------------------------
+-- Телепорт в осаду 2
 autoteleport:CreateButton({
     Name = "ТП в осаду 2",
     Callback = function()
         local Remotes = game:GetService("ReplicatedStorage"):WaitForChild("Remotes")
 
-        -- шаг 1
-        Remotes:WaitForChild("EnterCityRaidMap"):FireServer(1000002)
+        -- Этап 1: LocalPlayerTeleport (50007)
+        Remotes:WaitForChild("LocalPlayerTeleport"):FireServer({mapId = 50007})
+        print("Шаг 1: LocalPlayerTeleport (50007)")
 
-        print("✅ Телепорт в осаду 1 выполнен")
+        -- Этап 2: задержка 3 сек
+        task.wait(3)
+
+        -- Этап 3: EnterCityRaidMap (1000001)
+        Remotes:WaitForChild("EnterCityRaidMap"):FireServer(1000002)
+        print("Шаг 2: EnterCityRaidMap (1000002)")
+
+        -- Этап 4: StartLocalPlayerTeleport (50201)
+        Remotes:WaitForChild("StartLocalPlayerTeleport"):FireServer({mapId = 50201})
+        print("Шаг 3: StartLocalPlayerTeleport (50201)")
+
+        -
     end
 })
-
 ---------------------------------------------------------
 -- Телепорт героев из папки к игроку
 ---------------------------------------------------------
