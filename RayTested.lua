@@ -96,7 +96,7 @@ autoteleport:CreateButton({
         print("Шаг 1: LocalPlayerTeleport (50003)")
 
         -- Этап 2: задержка 3 сек
-        task.wait(2)
+        task.wait(3)
 
         -- Этап 3: EnterCityRaidMap (1000001)
         Remotes:WaitForChild("EnterCityRaidMap"):FireServer(1000001)
@@ -121,15 +121,16 @@ autoteleport:CreateButton({
         print("Шаг 1: LocalPlayerTeleport (50007)")
 
         -- Этап 2: задержка 3 сек
-        task.wait(2)
+        task.wait(3)
 
         -- Этап 3: EnterCityRaidMap (1000001)
         Remotes:WaitForChild("EnterCityRaidMap"):FireServer(1000002)
         print("Шаг 2: EnterCityRaidMap (1000002)")
 
-        -- Этап 4: StartLocalPlayerTeleport (50201)
+        -- Этап 4: StartLocalPlayerTeleport (50202)
         Remotes:WaitForChild("StartLocalPlayerTeleport"):FireServer({mapId = 50202})
         print("Шаг 3: StartLocalPlayerTeleport (50202)")
+
 
     end
 })
@@ -214,5 +215,62 @@ main:CreateButton({
         end
     end
 })
+
+---------------------------------------------------------
+-- Вкладка Potions (крафт зелий)
+---------------------------------------------------------
+local PotionTab = Window:CreateTab("Potions", 4483362458)
+
+-- таблица с вариантами и айди
+local PotionIds = {
+    ["Средняя удачи"] = 10047,
+    ["Средняя дмг"] = 10048,
+    ["Средняя монет"] = 10049,
+    ["Большая удачи"] = 10050,
+    ["Большая дмг"] = 10051,
+    ["Большая монет"] = 10052,
+}
+
+local SelectedPotion = "Средняя удачи"
+local PotionCount = 1
+
+-- выбор зелья
+PotionTab:CreateDropdown({
+    Name = "Выбери зелье",
+    Options = {"Средняя удачи","Средняя дмг","Средняя монет","Большая удачи","Большая дмг","Большая монет"},
+    CurrentOption = {"Средняя удачи"}, -- тут тоже массив
+    Flag = "PotionType",
+    Callback = function(option)
+        SelectedPotion = option[1]  -- ✅ берем первый элемент
+        print("Выбрано зелье:", SelectedPotion, "ID:", PotionIds[SelectedPotion])
+    end,
+})
+
+-- выбор количества
+PotionTab:CreateSlider({
+    Name = "Количество",
+    Range = {1, 10},
+    Increment = 1,
+    CurrentValue = 1,
+    Flag = "PotionCount",
+    Callback = function(value)
+        PotionCount = value
+        print("Количество установлено:", PotionCount)
+    end,
+})
+
+-- кнопка крафта
+PotionTab:CreateButton({
+    Name = "Скрафтить",
+    Callback = function()
+        local args = {{
+            id = PotionIds[SelectedPotion],
+            count = PotionCount
+        }}
+        game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("PotionMerge"):InvokeServer(unpack(args))
+        print("Скрафтил:", PotionCount, "x", SelectedPotion, "(ID:", PotionIds[SelectedPotion],")")
+    end
+})
+
 
 Rayfield:LoadConfiguration()
