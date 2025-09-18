@@ -53,7 +53,7 @@ autoteleport:CreateSlider({
 })
 
 autoteleport:CreateToggle({
-    Name = "Цикл телепорта 50001-50009",
+    Name = "Цикл телепорта 50001-50010",
     CurrentValue = false,
     Flag = "TeleportLoop",
     Callback = function(state)
@@ -62,7 +62,7 @@ autoteleport:CreateToggle({
             print("Цикл телепорта запущён")
             task.spawn(function()
                 while loopEnabled do
-                    for id = 50001, 50009 do
+                    for id = 50001, 50010 do
                         if not loopEnabled then break end
                         safeFire(id)
                         print("Отправлен mapId:", id)
@@ -84,7 +84,7 @@ autoteleport:CreateToggle({
 })
 
 ---------------------------------------------------------
--- Телепорт героев из папки к игроку
+-- Остальной функционал без изменений
 ---------------------------------------------------------
 local function teleportHeroes(folderName)
     local player = game.Players.LocalPlayer
@@ -104,35 +104,29 @@ local function teleportHeroes(folderName)
     end
 end
 
----------------------------------------------------------
--- Вкладка Main с кнопками arise
----------------------------------------------------------
 local main = Window:CreateTab("Main", 4483362458)
 
 main:CreateButton({
     Name = "arise nuton",
     Callback = function()
-        teleportHeroes("Hero_1420811697") --
+        teleportHeroes("Hero_1420811697")
     end
 })
 
 main:CreateButton({
     Name = "arise ivan",
     Callback = function()
-        teleportHeroes("Hero_8694797078") -- 
+        teleportHeroes("Hero_8694797078")
     end
 })
 
 main:CreateButton({
     Name = "arise dvoynik",
     Callback = function()
-        teleportHeroes("Hero_774897891") --
+        teleportHeroes("Hero_774897891")
     end
 })
 
----------------------------------------------------------
--- Кнопки для HeroEquipGradePanel и QuirkNewPanel
----------------------------------------------------------
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
