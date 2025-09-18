@@ -9,7 +9,7 @@ local Window = Rayfield:CreateWindow({
    Theme = "Amethyst",
    ToggleUIKeybind = "CapsLock",
    ConfigurationSaving = {
-      Enabled = false,
+      Enabled = true,
       FolderName = "NeytronHub v1.3",
       FileName = "Settings"
    },
@@ -272,5 +272,3 @@ PotionTab:CreateButton({
     end
 })
 
-
-Rayfield:LoadConfiguration()
