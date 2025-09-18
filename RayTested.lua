@@ -7,10 +7,10 @@ local Window = Rayfield:CreateWindow({
    LoadingSubtitle = "NUTON221",
    ShowText = "NeytronHub",
    Theme = "Amethyst",
-   ToggleUIKeybind = "CapsLock",
+   ToggleUIKeybind = "K",
    ConfigurationSaving = {
       Enabled = true,
-      FolderName = "NeytronHub v1.3",
+      FolderName = "NeytronHub",
       FileName = "Settings"
    },
    Discord = { Enabled = false },
@@ -238,10 +238,10 @@ local PotionCount = 1
 PotionTab:CreateDropdown({
     Name = "Выбери зелье",
     Options = {"Средняя удачи","Средняя дмг","Средняя монет","Большая удачи","Большая дмг","Большая монет"},
-    CurrentOption = {"Средняя удачи"},
+    CurrentOption = {"Средняя удачи"}, -- тут тоже массив
     Flag = "PotionType",
     Callback = function(option)
-        SelectedPotion = option[1]  
+        SelectedPotion = option[1]  -- ✅ берем первый элемент
         print("Выбрано зелье:", SelectedPotion, "ID:", PotionIds[SelectedPotion])
     end,
 })
@@ -272,3 +272,5 @@ PotionTab:CreateButton({
     end
 })
 
+
+Rayfield:LoadConfiguration()
