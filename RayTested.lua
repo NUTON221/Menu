@@ -238,10 +238,10 @@ local PotionCount = 1
 PotionTab:CreateDropdown({
     Name = "Выбери зелье",
     Options = {"Средняя удачи","Средняя дмг","Средняя монет","Большая удачи","Большая дмг","Большая монет"},
-    CurrentOption = {"Средняя удачи"}, -- тут тоже массив
+    CurrentOption = {"Средняя удачи"},
     Flag = "PotionType",
     Callback = function(option)
-        SelectedPotion = option[1]  -- ✅ берем первый элемент
+        SelectedPotion = option[1]  
         print("Выбрано зелье:", SelectedPotion, "ID:", PotionIds[SelectedPotion])
     end,
 })
