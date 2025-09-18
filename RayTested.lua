@@ -277,7 +277,6 @@ local scripts = Window:CreateTab("Scripts", 4483362458)
 local ScriptUrls = {
     ["Infinite Yield"] = "https://raw.githubusercontent.com/edgeiy/infiniteyield/master/source",
     ["Dark Dex V3"] = "https://raw.githubusercontent.com/Cynacol/Dark-Dex-V3/main/Dark%20Dex%20V3.txt",
-    [""] = ""
   
 }
 
@@ -286,7 +285,7 @@ local selectedScript = "Infinite Yield"
 -- Выбор скрипта
 scripts:CreateDropdown({
     Name = "Выбери скрипт",
-    Options = {"Infinite Yield", "Dark Dex V3", " "},
+    Options = {"Infinite Yield", "Dark Dex V3"},
     CurrentOption = {"Infinite Yield"},
     Flag = "ScriptType",
     Callback = function(option)
