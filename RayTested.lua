@@ -96,7 +96,7 @@ autoteleport:CreateButton({
         print("Шаг 1: LocalPlayerTeleport (50003)")
 
         -- Этап 2: задержка 3 сек
-        task.wait(3)
+        task.wait(1)
 
         -- Этап 3: EnterCityRaidMap (1000001)
         Remotes:WaitForChild("EnterCityRaidMap"):FireServer(1000001)
@@ -121,7 +121,7 @@ autoteleport:CreateButton({
         print("Шаг 1: LocalPlayerTeleport (50007)")
 
         -- Этап 2: задержка 3 сек
-        task.wait(3)
+        task.wait(1)
 
         -- Этап 3: EnterCityRaidMap (1000001)
         Remotes:WaitForChild("EnterCityRaidMap"):FireServer(1000002)
