@@ -83,7 +83,6 @@ autoteleport:CreateToggle({
     end
 })
 
-
 ---------------------------------------------------------
 -- Телепорт в осаду 1 
 autoteleport:CreateButton({
@@ -91,24 +90,19 @@ autoteleport:CreateButton({
     Callback = function()
         local Remotes = game:GetService("ReplicatedStorage"):WaitForChild("Remotes")
 
-        -- Этап 1: LocalPlayerTeleport (50003)
         Remotes:WaitForChild("LocalPlayerTeleport"):FireServer({mapId = 50003})
         print("Шаг 1: LocalPlayerTeleport (50003)")
 
-        -- Этап 2: задержка 3 сек
         task.wait(3)
 
-        -- Этап 3: EnterCityRaidMap (1000001)
         Remotes:WaitForChild("EnterCityRaidMap"):FireServer(1000001)
         print("Шаг 2: EnterCityRaidMap (1000001)")
 
-        -- Этап 4: StartLocalPlayerTeleport (50201)
         Remotes:WaitForChild("StartLocalPlayerTeleport"):FireServer({mapId = 50201})
         print("Шаг 3: StartLocalPlayerTeleport (50201)")
-
-    
     end
 })
+
 ---------------------------------------------------------
 -- Телепорт в осаду 2
 autoteleport:CreateButton({
@@ -116,24 +110,19 @@ autoteleport:CreateButton({
     Callback = function()
         local Remotes = game:GetService("ReplicatedStorage"):WaitForChild("Remotes")
 
-        -- Этап 1: LocalPlayerTeleport (50007)
         Remotes:WaitForChild("LocalPlayerTeleport"):FireServer({mapId = 50007})
         print("Шаг 1: LocalPlayerTeleport (50007)")
 
-        -- Этап 2: задержка 3 сек
         task.wait(3)
 
-        -- Этап 3: EnterCityRaidMap (1000001)
         Remotes:WaitForChild("EnterCityRaidMap"):FireServer(1000002)
         print("Шаг 2: EnterCityRaidMap (1000002)")
 
-        -- Этап 4: StartLocalPlayerTeleport (50202)
         Remotes:WaitForChild("StartLocalPlayerTeleport"):FireServer({mapId = 50202})
         print("Шаг 3: StartLocalPlayerTeleport (50202)")
-
-
     end
 })
+
 ---------------------------------------------------------
 -- Телепорт героев из папки к игроку
 ---------------------------------------------------------
@@ -156,7 +145,7 @@ local function teleportHeroes(folderName)
 end
 
 ---------------------------------------------------------
--- Вкладка Main с кнопками arise + осада
+-- Вкладка Main
 ---------------------------------------------------------
 local main = Window:CreateTab("Main", 4483362458)
 
@@ -181,25 +170,18 @@ main:CreateButton({
     end
 })
 
-
----------------------------------------------------------
--- Кнопки для HeroEquipGradePanel и QuirkNewPanel
----------------------------------------------------------
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui")
-
-local func1Panel = playerGui:WaitForChild("HeroEquipGradePanel", 10)
-local func2Panel = playerGui:WaitForChild("QuirkNewPanel", 10)
-
+-- исправленный поиск панелей
 main:CreateButton({
     Name = "Переключить range панель",
     Callback = function()
-        if func1Panel and typeof(func1Panel.Enabled) == "boolean" then
-            func1Panel.Enabled = not func1Panel.Enabled
-            print("HeroEquipGradePanel Enabled =", func1Panel.Enabled)
+        local player = game:GetService("Players").LocalPlayer
+        local playerGui = player:WaitForChild("PlayerGui")
+        local panel = playerGui:WaitForChild("HeroEquipGradePanel")
+        if panel and typeof(panel.Enabled) == "boolean" then
+            panel.Enabled = not panel.Enabled
+            print("HeroEquipGradePanel Enabled =", panel.Enabled)
         else
-            warn("HeroEquipGradePanel не найдена или не имеет свойства Enabled")
+            warn("HeroEquipGradePanel не имеет свойства Enabled")
         end
     end
 })
@@ -207,17 +189,20 @@ main:CreateButton({
 main:CreateButton({
     Name = "Переключить enchant панель",
     Callback = function()
-        if func2Panel and typeof(func2Panel.Enabled) == "boolean" then
-            func2Panel.Enabled = not func2Panel.Enabled
-            print("QuirkNewPanel Enabled =", func2Panel.Enabled)
+        local player = game:GetService("Players").LocalPlayer
+        local playerGui = player:WaitForChild("PlayerGui")
+        local panel = playerGui:WaitForChild("QuirkNewPanel")
+        if panel and typeof(panel.Enabled) == "boolean" then
+            panel.Enabled = not panel.Enabled
+            print("QuirkNewPanel Enabled =", panel.Enabled)
         else
-            warn("QuirkNewPanel не найдена или не имеет свойства Enabled")
+            warn("QuirkNewPanel не имеет свойства Enabled")
         end
     end
 })
 
 ---------------------------------------------------------
--- Вкладка Potions (крафт зелий)
+-- Вкладка Potions
 ---------------------------------------------------------
 local PotionTab = Window:CreateTab("Potions", 4483362458)
 
@@ -233,19 +218,17 @@ local PotionIds = {
 local SelectedPotion = "Средняя удачи"
 local PotionCount = 1
 
--- выбор зелья
 PotionTab:CreateDropdown({
     Name = "Выбери зелье",
     Options = {"Средняя удачи","Средняя дмг","Средняя монет","Большая удачи","Большая дмг","Большая монет"},
-    CurrentOption = {"Средняя удачи"}, 
+    CurrentOption = {"Средняя удачи"},
     Flag = "PotionType",
     Callback = function(option)
-        SelectedPotion = option[1] 
+        SelectedPotion = option[1]
         print("Выбрано зелье:", SelectedPotion, "ID:", PotionIds[SelectedPotion])
     end,
 })
 
--- выбор количества
 PotionTab:CreateSlider({
     Name = "Количество",
     Range = {1, 5},
@@ -258,7 +241,6 @@ PotionTab:CreateSlider({
     end,
 })
 
--- кнопка крафта
 PotionTab:CreateButton({
     Name = "Скрафтить",
     Callback = function()
