@@ -249,7 +249,7 @@ PotionTab:CreateDropdown({
 -- выбор количества
 PotionTab:CreateSlider({
     Name = "Количество",
-    Range = {1, 10},
+    Range = {1, 5},
     Increment = 1,
     CurrentValue = 1,
     Flag = "PotionCount",
