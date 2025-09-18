@@ -131,7 +131,6 @@ autoteleport:CreateButton({
         Remotes:WaitForChild("StartLocalPlayerTeleport"):FireServer({mapId = 50202})
         print("Шаг 3: StartLocalPlayerTeleport (50202)")
 
-        -
     end
 })
 ---------------------------------------------------------
