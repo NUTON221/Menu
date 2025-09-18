@@ -128,8 +128,8 @@ autoteleport:CreateButton({
         print("Шаг 2: EnterCityRaidMap (1000002)")
 
         -- Этап 4: StartLocalPlayerTeleport (50201)
-        Remotes:WaitForChild("StartLocalPlayerTeleport"):FireServer({mapId = 50201})
-        print("Шаг 3: StartLocalPlayerTeleport (50201)")
+        Remotes:WaitForChild("StartLocalPlayerTeleport"):FireServer({mapId = 50202})
+        print("Шаг 3: StartLocalPlayerTeleport (50202)")
 
         -
     end
