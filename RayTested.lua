@@ -7,10 +7,10 @@ local Window = Rayfield:CreateWindow({
    LoadingSubtitle = "NUTON221",
    ShowText = "NeytronHub",
    Theme = "Amethyst",
-   ToggleUIKeybind = "K",
+   ToggleUIKeybind = "CapsLock",
    ConfigurationSaving = {
       Enabled = true,
-      FolderName = "NeytronHub",
+      FolderName = "NeytronHub v1.3",
       FileName = "Settings"
    },
    Discord = { Enabled = false },
