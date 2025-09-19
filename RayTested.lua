@@ -108,10 +108,10 @@ TeleportTab:CreateButton({
     Name = "ТП в осаду 1",
     Callback = function()
         Remotes.LocalPlayerTeleport:FireServer({mapId = 50003})
-        task.wait(3)
+        task.wait(1.5)
         Remotes.EnterCityRaidMap:FireServer(1000001)
         Remotes.StartLocalPlayerTeleport:FireServer({mapId = 50201})
-        task.wait(2.5)
+        task.wait(1.5)
         teleportToRaidEnemy()
     end
 })
@@ -120,10 +120,10 @@ TeleportTab:CreateButton({
     Name = "ТП в осаду 2",
     Callback = function()
         Remotes.LocalPlayerTeleport:FireServer({mapId = 50007})
-        task.wait(3)
+        task.wait(1.5)
         Remotes.EnterCityRaidMap:FireServer(1000002)
         Remotes.StartLocalPlayerTeleport:FireServer({mapId = 50202})
-        task.wait(2.5)
+        task.wait(1.5)
         teleportToRaidEnemy()
     end
 })
