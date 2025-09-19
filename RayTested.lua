@@ -132,6 +132,8 @@ TeleportTab:CreateButton({
 ---------------------------------------------------------
 local MainTab = Window:CreateTab("Main", 4483362458)
 
+MainTab:CreateLabel("🦸‍♂️ Вызов героев 🦸‍♂️")
+
 local function teleportHeroes(folderName)
     local hrp = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
     local folder = workspace:WaitForChild("Heros"):FindFirstChild(folderName)
@@ -150,6 +152,8 @@ MainTab:CreateButton({Name = "arise dvoynik", Callback = function() teleportHero
 local gui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 local func1Panel = gui:WaitForChild("HeroEquipGradePanel",10)
 local func2Panel = gui:WaitForChild("QuirkNewPanel",10)
+
+MainTab:CreateLabel("🎛UI toggle🎛 ")
 
 MainTab:CreateButton({
     Name = "Переключить range панель",
@@ -203,6 +207,8 @@ PotionTab:CreateButton({
 -- Вкладка 4: ⚡ Misc
 ---------------------------------------------------------
 local MiscTab = Window:CreateTab("Misc", 4483362458)
+
+MiscTab:CreateLabel("⏱ Цикл телепорта 1-10 ⏱")
 
 local loopEnabled = false
 local delayTime = 15
