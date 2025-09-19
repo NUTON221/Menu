@@ -18,12 +18,15 @@ local Window = Rayfield:CreateWindow({
 })
 
 ---------------------------------------------------------
--- Телепорты по mapId (циклично)
+-- Сервисы
 ---------------------------------------------------------
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Remotes = ReplicatedStorage:WaitForChild("Remotes")
 local StartLocalPlayerTeleport = Remotes:WaitForChild("StartLocalPlayerTeleport")
 
+---------------------------------------------------------
+-- Функции для телепорта
+---------------------------------------------------------
 local loopEnabled = false
 local delayTime = 15
 
@@ -37,7 +40,15 @@ local function safeFire(mapId)
     end
 end
 
+---------------------------------------------------------
+-- Вкладка Teleport
+---------------------------------------------------------
 local autoteleport = Window:CreateTab("teleport", 4483362458)
+
+---------------------------------------------------------
+-- 📍 Цикл телепортов 📍
+---------------------------------------------------------
+autoteleport:CreateLabel("📍 Цикл телепортов 📍")
 
 autoteleport:CreateSlider({
     Name = "Время между тп",
@@ -84,7 +95,10 @@ autoteleport:CreateToggle({
 })
 
 ---------------------------------------------------------
--- Телепорт в осаду 1 
+-- ⚔️ Телепорты в осады ⚔️
+---------------------------------------------------------
+autoteleport:CreateLabel("⚔️ Телепорты в осады ⚔️")
+
 autoteleport:CreateButton({
     Name = "ТП в осаду 1",
     Callback = function()
@@ -100,11 +114,18 @@ autoteleport:CreateButton({
 
         Remotes:WaitForChild("StartLocalPlayerTeleport"):FireServer({mapId = 50201})
         print("Шаг 3: StartLocalPlayerTeleport (50201)")
+
+    
+        task.wait(1)
+        local player = game.Players.LocalPlayer
+        local char = player.Character or player.CharacterAdded:Wait()
+        if char:FindFirstChild("HumanoidRootPart") then
+            char.HumanoidRootPart.CFrame = CFrame.new(450.82962, 3.06984854, 15998.3838) 
+        end
+        print("Шаг 4: Телепорт по CFrame выполнен")
     end
 })
 
----------------------------------------------------------
--- Телепорт в осаду 2
 autoteleport:CreateButton({
     Name = "ТП в осаду 2",
     Callback = function()
@@ -120,11 +141,110 @@ autoteleport:CreateButton({
 
         Remotes:WaitForChild("StartLocalPlayerTeleport"):FireServer({mapId = 50202})
         print("Шаг 3: StartLocalPlayerTeleport (50202)")
+
+        -- 🟢 Новый шаг: ожидание 1 сек и телепорт по CFrame
+        task.wait(1)
+        local player = game.Players.LocalPlayer
+        local char = player.Character or player.CharacterAdded:Wait()
+        if char:FindFirstChild("HumanoidRootPart") then
+            char.HumanoidRootPart.CFrame = CFrame.new(0, 10, 0) -- ⬅ сюда твои координаты
+        end
+        print("Шаг 4: Телепорт по CFrame выполнен")
     end
 })
 
 ---------------------------------------------------------
--- Телепорт героев из папки к игроку
+-- 🌍 Телепорты по точкам миров 🌍
+---------------------------------------------------------
+autoteleport:CreateLabel("🌍 Телепорты по точкам миров 🌍")
+
+-- Таблица: каждая точка = { mapId, CFrame }
+local TeleportLocations = {
+    ["Мир 1 - Точка 1"] = {mapId = 50001, cf = CFrame.new(-60.3167725, 3.52404737, 6179.13232)},
+    ["Мир 1 - Точка 2"] = {mapId = 50001, cf = CFrame.new(84.9751816, 29.0378189, 6043.15576)},
+
+    ["Мир 2 - Точка 1"] = {mapId = 50002, cf = CFrame.new(2025.04004, 1.59309697, 5672.15625)},
+    ["Мир 2 - Точка 2"] = {mapId = 50002, cf = CFrame.new(1658.41565, 1.59309697, 5914.8916)},
+
+    ["Мир 3 - Точка 1"] = {mapId = 50003, cf = CFrame.new(3960.06641, -3.84654474, 5931.3916)},
+    ["Мир 3 - Точка 2"] = {mapId = 50003, cf = CFrame.new(3712.8833, 2.27105761, 5912.89014)},
+
+    ["Мир 4 - Точка 1"] = {mapId = 50004, cf = CFrame.new(5974.3999, 24.382719, 8168.91797)},
+    ["Мир 4 - Точка 2"] = {mapId = 50004, cf = CFrame.new(6030.479, 5.86975908, 7871.34375)},
+
+    ["Мир 5 - Точка 1"] = {mapId = 50005, cf = CFrame.new(126.561058, 2.68308091, 7971.30664)},
+    ["Мир 5 - Точка 2"] = {mapId = 50005, cf = CFrame.new(-128.22403, 2.68308115, 7844.58545)},
+
+    ["Мир 6 - Точка 1"] = {mapId = 50006, cf = CFrame.new(2005.61133, 1.05377722, 8015.82422)},
+   
+    ["Мир 7 - Точка 1"] = {mapId = 50007, cf = CFrame.new(3867.75464, 1.48300767, 7901.0918)},
+    ["Мир 7 - Точка 2"] = {mapId = 50007, cf = CFrame.new(3965.06079, 27.0371304, 8071.63477)},
+
+    ["Мир 8 - Точка 1"] = {mapId = 50008, cf = CFrame.new(5177.2793, -403.153809, 8880.75781)},
+    ["Мир 8 - Точка 2"] = {mapId = 50008, cf = CFrame.new(4815.97461, -403.153839, 8651.83008)},
+
+    ["Мир 9 - Точка 1"] = {mapId = 50009, cf = CFrame.new(-3.31273031, 5.81415415, 10240.6885)},
+
+    ["Мир 10 - Точка 1"] = {mapId = 50010, cf = CFrame.new(1763.28625, 1.14412689, 10277.6768)},
+    
+}
+
+local SelectedTP = "Мир 1 - Точка 1"
+
+-- Собираем все варианты
+local Options = {}
+for name in pairs(TeleportLocations) do
+    table.insert(Options, name)
+end
+
+-- Сортировка: мир → точка
+table.sort(Options, function(a, b)
+    local numA, pointA = string.match(a, "Мир (%d+) %- Точка (%d+)")
+    local numB, pointB = string.match(b, "Мир (%d+) %- Точка (%d+)")
+    numA, pointA, numB, pointB = tonumber(numA), tonumber(pointA), tonumber(numB), tonumber(pointB)
+    if numA == numB then
+        return pointA < pointB
+    else
+        return numA < numB
+    end
+end)
+
+autoteleport:CreateDropdown({
+    Name = "Выбери точку",
+    Options = Options,
+    CurrentOption = {SelectedTP},
+    Flag = "WorldTPOption",
+    Callback = function(option)
+        SelectedTP = option[1]
+        print("Выбрана точка:", SelectedTP)
+    end,
+})
+
+autoteleport:CreateButton({
+    Name = "Телепортироваться",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local hrp = character:WaitForChild("HumanoidRootPart")
+
+        local data = TeleportLocations[SelectedTP]
+        if data then
+            -- Шаг 1: телепорт в мир
+            Remotes:WaitForChild("StartLocalPlayerTeleport"):FireServer({mapId = data.mapId})
+            print("Телепорт в мир:", data.mapId)
+
+            -- Шаг 2: ждём 3 секунды и ставим CFrame
+            task.wait(1.5)
+            hrp.CFrame = data.cf
+            print("Телепортирован в точку:", SelectedTP)
+        else
+            warn("Точка "..SelectedTP.." не найдена!")
+        end
+    end
+})
+
+---------------------------------------------------------
+-- Вкладка Main
 ---------------------------------------------------------
 local function teleportHeroes(folderName)
     local player = game.Players.LocalPlayer
@@ -144,9 +264,6 @@ local function teleportHeroes(folderName)
     end
 end
 
----------------------------------------------------------
--- Вкладка Main
----------------------------------------------------------
 local main = Window:CreateTab("Main", 4483362458)
 
 main:CreateButton({
@@ -170,18 +287,21 @@ main:CreateButton({
     end
 })
 
--- исправленный поиск панелей
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+local func1Panel = playerGui:WaitForChild("HeroEquipGradePanel", 10)
+local func2Panel = playerGui:WaitForChild("QuirkNewPanel", 10)
+
 main:CreateButton({
     Name = "Переключить range панель",
     Callback = function()
-        local player = game:GetService("Players").LocalPlayer
-        local playerGui = player:WaitForChild("PlayerGui")
-        local panel = playerGui:WaitForChild("HeroEquipGradePanel")
-        if panel and typeof(panel.Enabled) == "boolean" then
-            panel.Enabled = not panel.Enabled
-            print("HeroEquipGradePanel Enabled =", panel.Enabled)
+        if func1Panel and typeof(func1Panel.Enabled) == "boolean" then
+            func1Panel.Enabled = not func1Panel.Enabled
+            print("HeroEquipGradePanel Enabled =", func1Panel.Enabled)
         else
-            warn("HeroEquipGradePanel не имеет свойства Enabled")
+            warn("HeroEquipGradePanel не найдена или не имеет свойства Enabled")
         end
     end
 })
@@ -189,14 +309,11 @@ main:CreateButton({
 main:CreateButton({
     Name = "Переключить enchant панель",
     Callback = function()
-        local player = game:GetService("Players").LocalPlayer
-        local playerGui = player:WaitForChild("PlayerGui")
-        local panel = playerGui:WaitForChild("QuirkNewPanel")
-        if panel and typeof(panel.Enabled) == "boolean" then
-            panel.Enabled = not panel.Enabled
-            print("QuirkNewPanel Enabled =", panel.Enabled)
+        if func2Panel and typeof(func2Panel.Enabled) == "boolean" then
+            func2Panel.Enabled = not func2Panel.Enabled
+            print("QuirkNewPanel Enabled =", func2Panel.Enabled)
         else
-            warn("QuirkNewPanel не имеет свойства Enabled")
+            warn("QuirkNewPanel не найдена или не имеет свойства Enabled")
         end
     end
 })
