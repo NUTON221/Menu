@@ -111,7 +111,7 @@ TeleportTab:CreateButton({
         task.wait(1.5)
         Remotes.EnterCityRaidMap:FireServer(1000001)
         Remotes.StartLocalPlayerTeleport:FireServer({mapId = 50201})
-        task.wait(1.5)
+        task.wait(3)
         teleportToRaidEnemy()
     end
 })
@@ -123,7 +123,7 @@ TeleportTab:CreateButton({
         task.wait(1.5)
         Remotes.EnterCityRaidMap:FireServer(1000002)
         Remotes.StartLocalPlayerTeleport:FireServer({mapId = 50202})
-        task.wait(1.5)
+        task.wait(3)
         teleportToRaidEnemy()
     end
 })
