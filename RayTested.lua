@@ -156,11 +156,11 @@ local func2Panel = gui:WaitForChild("QuirkNewPanel",10)
 MainTab:CreateLabel("🎛UI toggle🎛 ")
 
 MainTab:CreateButton({
-    Name = "Переключить range панель",
+    Name = "Точильня аксов",
     Callback = function() if func1Panel then func1Panel.Enabled = not func1Panel.Enabled end end
 })
 MainTab:CreateButton({
-    Name = "Переключить enchant панель",
+    Name = "Перки Теней",
     Callback = function() if func2Panel then func2Panel.Enabled = not func2Panel.Enabled end end
 })
 
