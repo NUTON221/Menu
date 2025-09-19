@@ -147,7 +147,7 @@ autoteleport:CreateButton({
         local player = game.Players.LocalPlayer
         local char = player.Character or player.CharacterAdded:Wait()
         if char:FindFirstChild("HumanoidRootPart") then
-            char.HumanoidRootPart.CFrame = CFrame.new(0, 10, 0) -- ⬅ сюда твои координаты
+            char.HumanoidRootPart.CFrame = CFrame.new(1988.69263, 1.04057407, 16108.4355) -- ⬅ сюда твои координаты
         end
         print("Шаг 4: Телепорт по CFrame выполнен")
     end
