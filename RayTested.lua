@@ -9,7 +9,7 @@ local Window = Rayfield:CreateWindow({
    Theme = "Amethyst",
    ToggleUIKeybind = "K",
    ConfigurationSaving = {
-      Enabled = false,
+      Enabled = true,
       FolderName = "NeytronHub",
       FileName = "Settings"
    },
@@ -242,3 +242,4 @@ MiscTab:CreateToggle({
         end
     end
 })
+Rayfield:LoadConfiguration()
