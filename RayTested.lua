@@ -29,51 +29,6 @@ local StartLocalPlayerTeleport = Remotes:WaitForChild("StartLocalPlayerTeleport"
 ---------------------------------------------------------
 local TeleportTab = Window:CreateTab("Teleport", 4483362458)
 
-TeleportTab:CreateLabel("⚔️ Телепорты в осады ⚔️")
-
-local function teleportToRaidEnemy()
-    local enemiesFolder = workspace:FindFirstChild("Enemys")
-    if not enemiesFolder then
-        print("Папка Enemys не найдена")
-        return
-    end
-
-    local mob1 = enemiesFolder:FindFirstChild("Legia")
-    local mob2 = enemiesFolder:FindFirstChild("Frostborne")
-    local target = mob1 or mob2
-
-    if target and target:FindFirstChild("HumanoidRootPart") then
-        game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(target.HumanoidRootPart.CFrame + Vector3.new(0, 3, 0))
-        print("Телепорт к мобу: " .. target.Name)
-    else
-        print("Ни один из нужных мобов не найден")
-    end
-end
-
-TeleportTab:CreateButton({
-    Name = "ТП в осаду 1",
-    Callback = function()
-        Remotes.LocalPlayerTeleport:FireServer({mapId = 50003})
-        task.wait(3)
-        Remotes.EnterCityRaidMap:FireServer(1000001)
-        Remotes.StartLocalPlayerTeleport:FireServer({mapId = 50201})
-        task.wait(2.5)
-        teleportToRaidEnemy()
-    end
-})
-
-TeleportTab:CreateButton({
-    Name = "ТП в осаду 2",
-    Callback = function()
-        Remotes.LocalPlayerTeleport:FireServer({mapId = 50007})
-        task.wait(3)
-        Remotes.EnterCityRaidMap:FireServer(1000002)
-        Remotes.StartLocalPlayerTeleport:FireServer({mapId = 50202})
-        task.wait(2.5)
-        teleportToRaidEnemy()
-    end
-})
-
 TeleportTab:CreateLabel("🌍 Телепорты по точкам миров 🌍")
 
 local TeleportLocations = {
@@ -128,7 +83,50 @@ TeleportTab:CreateButton({
         end
     end
 })
+TeleportTab:CreateLabel("⚔️ Телепорты в осады ⚔️")
 
+local function teleportToRaidEnemy()
+    local enemiesFolder = workspace:FindFirstChild("Enemys")
+    if not enemiesFolder then
+        print("Папка Enemys не найдена")
+        return
+    end
+
+    local mob1 = enemiesFolder:FindFirstChild("Legia")
+    local mob2 = enemiesFolder:FindFirstChild("Frostborne")
+    local target = mob1 or mob2
+
+    if target and target:FindFirstChild("HumanoidRootPart") then
+        game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(target.HumanoidRootPart.CFrame + Vector3.new(0, 3, 0))
+        print("Телепорт к мобу: " .. target.Name)
+    else
+        print("Ни один из нужных мобов не найден")
+    end
+end
+
+TeleportTab:CreateButton({
+    Name = "ТП в осаду 1",
+    Callback = function()
+        Remotes.LocalPlayerTeleport:FireServer({mapId = 50003})
+        task.wait(3)
+        Remotes.EnterCityRaidMap:FireServer(1000001)
+        Remotes.StartLocalPlayerTeleport:FireServer({mapId = 50201})
+        task.wait(2.5)
+        teleportToRaidEnemy()
+    end
+})
+
+TeleportTab:CreateButton({
+    Name = "ТП в осаду 2",
+    Callback = function()
+        Remotes.LocalPlayerTeleport:FireServer({mapId = 50007})
+        task.wait(3)
+        Remotes.EnterCityRaidMap:FireServer(1000002)
+        Remotes.StartLocalPlayerTeleport:FireServer({mapId = 50202})
+        task.wait(2.5)
+        teleportToRaidEnemy()
+    end
+})
 ---------------------------------------------------------
 -- Вкладка 2: ⚙️ Main
 ---------------------------------------------------------
