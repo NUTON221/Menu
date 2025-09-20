@@ -6,7 +6,7 @@
     LoadingTitle = "Загрузка...",
     LoadingSubtitle = "NUTON221",
     ShowText = "NeytronHub",
-    Theme = "Amethyst",
+    Theme = "AmberGlow",
     ToggleUIKeybind = "K",
     ConfigurationSaving = {
         Enabled = true,
