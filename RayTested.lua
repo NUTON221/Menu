@@ -191,6 +191,7 @@ Button.TextSize = 20
 Button.BackgroundTransparency = 0.2
 Button.Parent = ScreenGui
 
+-- крестик
 local Close = Instance.new("TextButton")
 Close.Size = UDim2.new(0, 20, 0, 20)
 Close.Position = UDim2.new(1, -24, 0, 2)
@@ -208,10 +209,28 @@ Close.MouseButton1Click:Connect(function()
 end)
 
 -- действие кнопки
-Button.MouseButton1Click:Connect(function()
+local function callHero()
     local heroFolder = Heroes[SelectedHero]
     if heroFolder then
         teleportHeroes(heroFolder)
+    end
+end
+
+Button.MouseButton1Click:Connect(function(x, y)
+    -- если клик был не по крестику
+    local pos = UserInputService:GetMouseLocation()
+    if not (pos.X > Close.AbsolutePosition.X 
+        and pos.X < Close.AbsolutePosition.X + Close.AbsoluteSize.X
+        and pos.Y > Close.AbsolutePosition.Y
+        and pos.Y < Close.AbsolutePosition.Y + Close.AbsoluteSize.Y) then
+        callHero()
+    end
+end)
+
+-- биндим на клавишу E
+UserInputService.InputBegan:Connect(function(input, gp)
+    if not gp and input.KeyCode == Enum.KeyCode.E then
+        callHero()
     end
 end)
 
@@ -227,6 +246,7 @@ local function update(input)
 end
 Button.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        -- не даём тянуть, если жмут по крестику
         if input.Position.X > Close.AbsolutePosition.X 
         and input.Position.X < Close.AbsolutePosition.X + Close.AbsoluteSize.X
         and input.Position.Y > Close.AbsolutePosition.Y
@@ -270,21 +290,22 @@ MainTab:CreateToggle({
     end
 })
 
+-- UI Toggle панелей
+local gui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+local func1Panel = gui:WaitForChild("HeroEquipGradePanel",10)
+local func2Panel = gui:WaitForChild("QuirkNewPanel",10)
 
-    local gui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-    local func1Panel = gui:WaitForChild("HeroEquipGradePanel",10)
-    local func2Panel = gui:WaitForChild("QuirkNewPanel",10)
+MainTab:CreateLabel("🎛UI toggle🎛 ")
 
-    MainTab:CreateLabel("🎛UI toggle🎛 ")
+MainTab:CreateButton({
+    Name = "Точильня аксов",
+    Callback = function() if func1Panel then func1Panel.Enabled = not func1Panel.Enabled end end
+})
+MainTab:CreateButton({
+    Name = "Перки Теней",
+    Callback = function() if func2Panel then func2Panel.Enabled = not func2Panel.Enabled end end
+})
 
-    MainTab:CreateButton({
-        Name = "Точильня аксов",
-        Callback = function() if func1Panel then func1Panel.Enabled = not func1Panel.Enabled end end
-    })
-    MainTab:CreateButton({
-        Name = "Перки Теней",
-        Callback = function() if func2Panel then func2Panel.Enabled = not func2Panel.Enabled end end
-    })
 
     ---------------------------------------------------------
     -- Вкладка 3: 🧪 Potion
