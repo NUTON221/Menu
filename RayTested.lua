@@ -346,44 +346,94 @@ MainTab:CreateButton({
         end
     })
 
-    ---------------------------------------------------------
-    -- Вкладка 4: ⚡ Misc
-    ---------------------------------------------------------
-    local MiscTab = Window:CreateTab("Misc", 4483362458)
+  ---------------------------------------------------------
+-- Вкладка 4: ⚡ Misc (цикл телепорта по порядку)
+---------------------------------------------------------
+local MiscTab = Window:CreateTab("Misc", 4483362458)
 
-    MiscTab:CreateLabel("⏱ Цикл телепорта 1-10 ⏱")
+MiscTab:CreateLabel("⏱ Цикл телепорта по мирам ⏱")
 
-    local loopEnabled = false
-    local delayTime = 15
+local loopEnabled = false
+local delayTime = 15
+local SelectedWorlds = {"1"} -- по умолчанию
 
-    MiscTab:CreateSlider({
-        Name = "Время между тп",
-        Range = {1, 60},
-        Increment = 1,
-        CurrentValue = 15,
-        Callback = function(value) delayTime = value end,
-    })
+-- слайдер задержки
+MiscTab:CreateSlider({
+    Name = "Время между тп",
+    Range = {1, 60},
+    Increment = 1,
+    CurrentValue = 15,
+    Callback = function(value) delayTime = value end,
+})
 
-    MiscTab:CreateToggle({
-        Name = "Цикл телепорта 50001-50010",
-        CurrentValue = false,
-        Callback = function(state)
-            loopEnabled = state
-            if loopEnabled then
-                task.spawn(function()
-                    while loopEnabled do
-                        for id=50001,50010 do
-                            if not loopEnabled then break end
-                            StartLocalPlayerTeleport:FireServer({mapId=id})
-                            local t=0
-                            while t<delayTime and loopEnabled do
-                                task.wait(0.25) t+=0.25
-                            end
+-- список миров 1..10
+local WorldOptions = {}
+for i = 1, 10 do table.insert(WorldOptions, tostring(i)) end
+
+MiscTab:CreateDropdown({
+    Name = "Выбери миры для цикла",
+    Options = WorldOptions,
+    CurrentOption = {"1"},
+    MultipleOptions = true, -- множественный выбор
+    Callback = function(option)
+        SelectedWorlds = option
+    end,
+})
+
+-- вспомогательная: парсим выбор и возвращаем отсортированный список чисел
+local function getSortedWorldList(selection)
+    local nums = {}
+    if type(selection) == "table" then
+        for _, v in ipairs(selection) do
+            local n = tonumber(v)
+            if n and n >= 1 and n <= 10 then table.insert(nums, n) end
+        end
+    else
+        local n = tonumber(selection)
+        if n and n >= 1 and n <= 10 then table.insert(nums, n) end
+    end
+    if #nums == 0 then return {} end
+    table.sort(nums)
+    -- убираем дубли
+    local uniq = {}
+    for i = 1, #nums do
+        if nums[i] ~= nums[i-1] then table.insert(uniq, nums[i]) end
+    end
+    return uniq
+end
+
+-- toggle запуска/остановки цикла
+MiscTab:CreateToggle({
+    Name = "Запустить цикл телепорта",
+    CurrentValue = false,
+    Callback = function(state)
+        loopEnabled = state
+        if loopEnabled then
+            task.spawn(function()
+                while loopEnabled do
+                    local worlds = getSortedWorldList(SelectedWorlds)
+                    if #worlds == 0 then
+                        warn("⚠️ Не выбран ни один мир для цикла.")
+                        loopEnabled = false
+                        break
+                    end
+
+                    for _, worldNum in ipairs(worlds) do
+                        if not loopEnabled then break end
+                        local id = 50000 + worldNum
+                        StartLocalPlayerTeleport:FireServer({mapId = id})
+                        -- ждать delayTime секунд
+                        local t = 0
+                        while t < delayTime and loopEnabled do
+                            task.wait(0.25)
+                            t = t + 0.25
                         end
                     end
-                end)
-            end
+                end
+            end)
         end
-    })
+    end,
+})
+
     -- Загружаем сохранённые настройки
     Rayfield:LoadConfiguration()
