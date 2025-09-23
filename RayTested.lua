@@ -355,15 +355,25 @@ MiscTab:CreateLabel("⏱ Цикл телепорта по мирам ⏱")
 
 local loopEnabled = false
 local delayTime = 15
-local SelectedWorlds = {"1"} -- по умолчанию
+local raidDelay = 3 -- отдельная задержка перед рейдом
+local SelectedWorlds = {"1"}
 
--- слайдер задержки
+-- слайдер задержки между мирами
 MiscTab:CreateSlider({
-    Name = "Время между тп",
+    Name = "Время между тп (миры)",
     Range = {1, 60},
     Increment = 1,
     CurrentValue = 15,
     Callback = function(value) delayTime = value end,
+})
+
+-- слайдер задержки перед рейдом
+MiscTab:CreateSlider({
+    Name = "Время перед рейдом",
+    Range = {1, 10},
+    Increment = 1,
+    CurrentValue = 3,
+    Callback = function(value) raidDelay = value end,
 })
 
 -- список миров 1..10
@@ -374,13 +384,11 @@ MiscTab:CreateDropdown({
     Name = "Выбери миры для цикла",
     Options = WorldOptions,
     CurrentOption = {"1"},
-    MultipleOptions = true, -- множественный выбор
-    Callback = function(option)
-        SelectedWorlds = option
-    end,
+    MultipleOptions = true,
+    Callback = function(option) SelectedWorlds = option end,
 })
 
--- вспомогательная: парсим выбор и возвращаем отсортированный список чисел
+-- парсинг выбора
 local function getSortedWorldList(selection)
     local nums = {}
     if type(selection) == "table" then
@@ -392,9 +400,7 @@ local function getSortedWorldList(selection)
         local n = tonumber(selection)
         if n and n >= 1 and n <= 10 then table.insert(nums, n) end
     end
-    if #nums == 0 then return {} end
     table.sort(nums)
-    -- убираем дубли
     local uniq = {}
     for i = 1, #nums do
         if nums[i] ~= nums[i-1] then table.insert(uniq, nums[i]) end
@@ -402,7 +408,7 @@ local function getSortedWorldList(selection)
     return uniq
 end
 
--- toggle запуска/остановки цикла
+-- toggle цикла
 MiscTab:CreateToggle({
     Name = "Запустить цикл телепорта",
     CurrentValue = false,
@@ -420,9 +426,25 @@ MiscTab:CreateToggle({
 
                     for _, worldNum in ipairs(worlds) do
                         if not loopEnabled then break end
+
+                        -- телепорт в выбранный мир
                         local id = 50000 + worldNum
-                        StartLocalPlayerTeleport:FireServer({mapId = id})
-                        -- ждать delayTime секунд
+                        Remotes.StartLocalPlayerTeleport:FireServer({mapId = id})
+
+                        -- если это 3 или 7 мир → сразу в рейд
+                        if loopEnabled then
+                            if worldNum == 3 then
+                                task.wait(raidDelay)
+                                Remotes.EnterCityRaidMap:FireServer(1000001)
+                                Remotes.StartLocalPlayerTeleport:FireServer({mapId = 50201})
+                            elseif worldNum == 7 then
+                                task.wait(raidDelay)
+                                Remotes.EnterCityRaidMap:FireServer(1000002)
+                                Remotes.StartLocalPlayerTeleport:FireServer({mapId = 50202})
+                            end
+                        end
+
+                        -- задержка перед следующим миром
                         local t = 0
                         while t < delayTime and loopEnabled do
                             task.wait(0.25)
